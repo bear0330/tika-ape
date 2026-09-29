@@ -1,0 +1,5 @@
+These fixtures originate from chrismattmann/tika-python:
+https://github.com/chrismattmann/tika-python
+
+They are used to adapt that project's document-parsing tests for tika-ape.
+The upstream project is licensed under Apache-2.0.

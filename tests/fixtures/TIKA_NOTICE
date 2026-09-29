@@ -1,0 +1,9 @@
+The tika-inline-images.pdf fixture is copied from Apache Tika's source tree:
+
+  tika-parsers/tika-parsers-standard/tika-parsers-standard-modules/
+  tika-parser-pdf-module/src/test/resources/test-documents/
+  testPDF_childAttachments.pdf
+
+Apache Tika is licensed under the Apache License, Version 2.0. This fixture is
+used to verify the upstream PDF parser's documented inline-image extraction
+behavior.

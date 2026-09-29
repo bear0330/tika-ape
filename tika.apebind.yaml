@@ -1,0 +1,150 @@
+schema_version: 1
+ape:
+  name: tika-ape
+  binary: tika.com
+commands:
+  - path: []
+    summary: Extract document content and metadata with Apache Tika.
+    positionals: []
+    options:
+      - flags: [--config=]
+        api_name: config
+        value_type: path
+        required: false
+        multiple: false
+        choices: []
+        help: Tika JSON configuration file.
+      - flags: [--password]
+        api_name: password
+        value_type: string
+        required: false
+        multiple: false
+        choices: []
+        help: Password for an encrypted document.
+      - flags: [--encoding]
+        api_name: encoding
+        value_type: string
+        required: false
+        multiple: false
+        choices: []
+        help: Output encoding.
+      - flags: [--pretty-print]
+        api_name: pretty_print
+        value_type: boolean
+        required: false
+        multiple: false
+        choices: []
+        help: Format JSON, XML, and XHTML output for readability.
+  - path: [--md]
+    summary: Extract Markdown content.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--text]
+    summary: Extract plain text content.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--xml]
+    summary: Extract XHTML content, including embedded-resource references.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--json]
+    summary: Extract metadata as JSON.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--metadata]
+    summary: Extract metadata as text.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--detect]
+    summary: Detect the document media type.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+  - path: [--language]
+    summary: Detect the document language.
+    positionals:
+      - name: SOURCE
+        api_name: source
+        value_type: path
+        required: true
+        multiple: false
+        help: Document path or URL to process.
+    options: []
+operations:
+  - name: extract
+    command: [--md]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
+  - name: extract_text
+    command: [--text]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
+  - name: extract_xml
+    command: [--xml]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
+  - name: extract_json
+    command: [--json]
+    execution: oneshot
+    result:
+      format: json
+      strip: true
+  - name: metadata
+    command: [--metadata]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
+  - name: detect
+    command: [--detect]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
+  - name: detect_language
+    command: [--language]
+    execution: oneshot
+    result:
+      format: text
+      strip: true
