@@ -1,14 +1,17 @@
 # tika-ape
 
-Apache Tika 4 from Python and Node.js, without installing Java.
+Apache Tika 4 as a portable CLI and from Python or Node.js, without installing
+Java.
 
 `tika-ape` bundles Apache Tika 4 and its Java runtime into a portable
 `tika.com`, then exposes document extraction through language-native bindings
 generated with [APEBind](https://github.com/nuwainfo/apebind). No system Java,
 Tika server, or JVM configuration is required.
 
-`tika.com` is a release artifact rather than a Git object because it exceeds
-GitHub's 100 MB file limit. Download it from the latest release:
+## Use `tika.com`
+
+You can download the latest [`tika.com` release](https://github.com/bear0330/tika-ape/releases)
+and use it directly as an APE CLI:
 
 ```powershell
 Invoke-WebRequest https://github.com/bear0330/tika-ape/releases/latest/download/tika.com -OutFile tika.com
@@ -19,9 +22,14 @@ curl -fL https://github.com/bear0330/tika-ape/releases/latest/download/tika.com 
 chmod +x tika.com
 ```
 
-The Python wheel and Node.js tarball are release assets for the same reason.
-They bundle `tika.com`; installing either package does not download or require
-a host Java runtime.
+```powershell
+.\tika.com --text report.pdf
+.\tika.com --json report.pdf
+.\tika.com --detect report.pdf
+```
+
+The CLI extracts text, emits document metadata as JSON, and detects MIME types.
+It does not require a host Java runtime.
 
 ## Install a binding
 
