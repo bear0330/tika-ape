@@ -11,38 +11,33 @@ Tika server, or JVM configuration is required.
 ## Use `tika.com`
 
 You can download the latest [`tika.com` release](https://github.com/bear0330/tika-ape/releases)
-and use it directly as an APE CLI:
-
-```powershell
-Invoke-WebRequest https://github.com/bear0330/tika-ape/releases/latest/download/tika.com -OutFile tika.com
-```
+with `tika-config.json` and use it directly as an APE CLI:
 
 ```sh
-curl -fL https://github.com/bear0330/tika-ape/releases/latest/download/tika.com -o tika.com
-chmod +x tika.com
+./tika.com --config=tika-config.json --text report.pdf
+./tika.com --config=tika-config.json --json report.pdf
+./tika.com --config=tika-config.json --detect report.pdf
 ```
 
-```powershell
-.\tika.com --text report.pdf
-.\tika.com --json report.pdf
-.\tika.com --detect report.pdf
-```
-
-The CLI extracts text, emits document metadata as JSON, and detects MIME types.
-It does not require a host Java runtime.
+The standalone CLI has no JNI support, so its companion text-only profile
+disables PDF inline-image extraction. It still extracts text, emits document
+metadata as JSON, and detects MIME types without a host Java runtime. The
+Python binding supplies a Host Services provider for
+[java-ape](https://github.com/bear0330/java-ape), and therefore enables the
+tested inline-image path by default.
 
 ## Install a binding
 
 Install the Python wheel directly from the release:
 
 ```sh
-python -m pip install https://github.com/bear0330/tika-ape/releases/download/v0.1.0/tika_ape-0.1.0-py3-none-any.whl
+python -m pip install https://github.com/bear0330/tika-ape/releases/download/v0.2.7/tika_ape-0.2.7-py3-none-any.whl
 ```
 
 Or install the Node.js package tarball:
 
 ```sh
-npm install https://github.com/bear0330/tika-ape/releases/download/v0.1.0/tika-ape-0.1.0.tgz
+npm install https://github.com/bear0330/tika-ape/releases/download/v0.2.7/tika-ape-0.2.7.tgz
 ```
 
 Replace both version strings with the chosen release version. The package
@@ -60,7 +55,7 @@ text = tika_ape.extract_text('report.pdf')
 document = parser.from_file('report.pdf')
 ```
 
-Node.js exposes the same underlying CLI capability:
+Node.js exposes the same text-oriented CLI capability:
 
 ```js
 import { extractJson, extractText } from 'tika-ape';
@@ -69,27 +64,23 @@ const text = await extractText('report.pdf');
 const metadata = await extractJson('report.pdf');
 ```
 
-The Python package enables its bundled Host Services provider by default. This
-allows PDFBox to decode and extract PDF image resources without a host AWT JNI
-library. Tika's normal conservative PDF behavior remains the default. Enable
-inline-image extraction when needed:
+Unlike standalone `tika.com`, the Python binding enables PDF inline-image
+extraction by default because it bundles a Host Services provider. Node.js
+does not yet ship that provider, so it remains text-oriented. Use Python's
+text-only profile when embedded image output is unnecessary:
 
 ```python
 import tika_ape
 
-tika_ape.configure(inline_images=True)
-xml = tika_ape.extract_xml('report.pdf')
+tika_ape.configure(inline_images=False)
+text = tika_ape.extract_text('report.pdf')
 ```
 
-Node.js provides the same opt-in behavior and runs its bundled Host Services
-provider without a native Node addon:
-
-```js
-import { configure, extractXml } from 'tika-ape';
-
-configure({ inlineImages: true });
-const xml = await extractXml('report.pdf');
-```
+The Python provider also implements LCMS profile and colour conversion through
+Pillow's `ImageCms`. For PDFBox's tested image path, it registers a generic
+`MaskBlit` primitive and handles unclipped, maskless `Src` and `SrcOver`
+compositing through `BufferedImage` pixels. This covers the Klook voucher PDF
+used by the regression suite.
 
 `tika_ape.initVM()` remains as a `tika-python` compatibility alias; it
 configures the package and does not start a JVM.
@@ -98,10 +89,10 @@ configures the package and does not start a JVM.
 
 Text, metadata, MIME detection, encoding, language detection, and normal PDF
 extraction run without host Java. Full JNI/AWT compatibility is not promised.
-PDF inline-image extraction is opt-in and uses the bundled Host Services
-provider for the specific Java native initializers required by this Tika path;
-it is not general AWT emulation. OCR and media-transcoding parsers still need
-their respective external tools.
+The Python binding supports the tested PDFBox inline-image paths, including
+Klook's ICC/masked-image document. Other composite rules, clipping, and
+coverage-mask operations remain outside the current Host provider.
+OCR and media-transcoding parsers still need their respective external tools.
 
 ## Examples
 

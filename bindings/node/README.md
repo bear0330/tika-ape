@@ -9,7 +9,7 @@ document languages without requiring a host Java installation.
 Install the tarball published with a GitHub Release:
 
 ```sh
-npm install https://github.com/bear0330/tika-ape/releases/download/v0.1.0/tika-ape-0.1.0.tgz
+npm install https://github.com/bear0330/tika-ape/releases/download/v0.2.6/tika-ape-0.2.6.tgz
 ```
 
 Replace the version in both places when selecting another release.
@@ -47,7 +47,8 @@ const encoding = await detectEncoding('report.pdf');
 const language = await detectLanguage('report.pdf');
 ```
 
-To extract PDF inline images as embedded resources, opt in to Tika's setting:
+The default profile disables PDF inline-image extraction for conservative
+document ingestion. To extract tested PDF inline-image formats, opt in:
 
 ```js
 import { configure, extractXml } from 'tika-ape';
@@ -55,6 +56,10 @@ import { configure, extractXml } from 'tika-ape';
 configure({ inlineImages: true });
 const xml = await extractXml('report.pdf');
 ```
+
+Node Host Services supplies the exact AWT initializers used by the tested
+PDFBox paths. It is not general Java2D emulation; ICC conversion and complex
+masked PDF images need a future Node image provider and Java2D render loops.
 
 For migration from the legacy `tika` npm package, the package also offers
 callback-compatible `extract()`, `text()`, `xhtml()`, `meta()`, `type()`,

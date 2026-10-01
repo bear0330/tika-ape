@@ -21,6 +21,9 @@ import { TikaHostServices } from './host_services.js';
 
 
 const DEFAULT_CLIENT = createClient();
+const DEFAULT_CONFIG = fileURLToPath(
+  new URL('./config/default.json', import.meta.url),
+);
 const INLINE_IMAGES_CONFIG = fileURLToPath(
   new URL('./config/inline-images.json', import.meta.url),
 );
@@ -64,7 +67,7 @@ function configPath(config) {
     return INLINE_IMAGES_CONFIG;
   }
 
-  return undefined;
+  return DEFAULT_CONFIG;
 }
 
 

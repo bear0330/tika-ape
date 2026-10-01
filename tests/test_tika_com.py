@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TIKA = ROOT / 'tika.com'
 SAMPLE = ROOT / 'tests' / 'fixtures' / 'sample.txt'
+PDF_WITH_IMAGES = ROOT / 'tests' / 'fixtures' / 'tika-inline-images.pdf'
 
 
 class TikaComTests(unittest.TestCase):
@@ -21,6 +22,8 @@ class TikaComTests(unittest.TestCase):
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
         )
 
     def test_help(self) -> None:
@@ -37,6 +40,17 @@ class TikaComTests(unittest.TestCase):
         self.assertIn('APEBind turns portable CLI applications', text)
         self.assertEqual('text/plain', media_type)
         self.assertTrue(metadata['Content-Type'].startswith('text/plain'))
+
+    def test_text_profile_avoids_pdf_inline_images(self) -> None:
+        source = str(PDF_WITH_IMAGES.relative_to(ROOT))
+        text = self.run_tika(
+            '--config=tika-config.json',
+            '--text',
+            source,
+        ).stdout
+
+        self.assertIn('Department of the Treasury', text)
+        self.assertNotIn('embedded:image-', text)
 
 
 if __name__ == '__main__':

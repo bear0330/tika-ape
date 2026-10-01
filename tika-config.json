@@ -1,0 +1,13 @@
+{
+  "parsers": [
+    {
+      "pdf-parser": {
+        "extractInlineImages": false,
+        "extractInlineImageMetadataOnly": false
+      }
+    },
+    {
+      "default-parser": {}
+    }
+  ]
+}

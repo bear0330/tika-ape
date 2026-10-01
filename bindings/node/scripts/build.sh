@@ -11,3 +11,5 @@ mkdir -p "$cache_directory"
 "$script_root/prepare.sh"
 cd "$project_root"
 npm pack --cache "$cache_directory"
+version=$(node -p 'require("./package.json").version')
+node "$script_root/normalize_tarball.mjs" "$project_root/tika-ape-$version.tgz"

@@ -11,27 +11,33 @@ import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Iterator
+from urllib.parse import urlparse
 
 from . import _generated
 from .host_services import _TikaHostServices
 
 
 _host_services_enabled = True
-_host_services: _TikaHostServices | None = None
-_inline_images_enabled = False
+_inline_images_enabled = True
+_ocr_enabled = True
+_default_config = Path(__file__).with_name('config') / 'default.json'
 _inline_images_config = Path(__file__).with_name('config') / 'inline-images.json'
+_no_ocr_config = Path(__file__).with_name('config') / 'no-ocr.json'
+_inline_images_no_ocr_config = Path(__file__).with_name('config') / 'inline-images-no-ocr.json'
 
 
-def configure(*, host_services: bool = True, inline_images: bool = False) -> None:
+def configure(
+    *,
+    host_services: bool = True,
+    inline_images: bool = True,
+    ocr: bool = True,
+) -> None:
     """Configure the bundled Tika runtime before parsing documents."""
-    global _host_services_enabled, _host_services, _inline_images_enabled
-
-    if _host_services is not None and not host_services:
-        _host_services.close()
-        _host_services = None
+    global _host_services_enabled, _inline_images_enabled, _ocr_enabled
 
     _host_services_enabled = host_services
     _inline_images_enabled = inline_images
+    _ocr_enabled = ocr
 
 
 def initVM() -> None:
@@ -39,35 +45,47 @@ def initVM() -> None:
     configure()
 
 
-def _client() -> Any:
-    global _host_services
-
-    if not _host_services_enabled:
-        return _generated._CLIENT
-
-    if _host_services is None:
-        _host_services = _TikaHostServices()
-        _host_services.start()
-
-    return _host_services
-
-
 def _config_path(config: str | Path | None) -> str | Path | None:
     if config is not None:
         return config
 
     if _inline_images_enabled:
+        if not _ocr_enabled:
+            return _inline_images_no_ocr_config
+
         return _inline_images_config
 
-    return None
+    if not _ocr_enabled:
+        return _no_ocr_config
+
+    return _default_config
+
+
+@contextmanager
+def _client() -> Iterator[Any]:
+    if not _host_services_enabled:
+        yield _generated._CLIENT
+        return
+
+    host_services = _TikaHostServices()
+    host_services.start()
+
+    try:
+        yield host_services
+    finally:
+        host_services.close()
 
 
 @contextmanager
 def _source_path(source: str | Path) -> Iterator[str]:
-    candidate = Path(source)
+    source_value = str(source)
+    candidate = Path(source_value)
     if not candidate.exists():
-        yield str(source)
-        return
+        if urlparse(source_value).scheme in {'file', 'http', 'https'}:
+            yield source_value
+            return
+
+        raise FileNotFoundError(f'Tika input file does not exist: {candidate}')
 
     working_directory = Path.cwd().resolve()
     source_path = candidate.resolve()
@@ -96,7 +114,8 @@ def _invoke(operation: str, source: Any, **options: Any) -> Any:
         options['source'] = source_path
         options['config'] = _config_path(options.get('config'))
 
-        return _client().invoke(operation, options)
+        with _client() as client:
+            return client.invoke(operation, options)
 
 
 def extract(source: Any, config: str | Path | None = None, **options: Any) -> str:

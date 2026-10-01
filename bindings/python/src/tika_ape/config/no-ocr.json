@@ -1,0 +1,18 @@
+{
+  "parsers": [
+    {
+      "pdf-parser": {
+        "extractInlineImages": false,
+        "extractInlineImageMetadataOnly": false
+      }
+    },
+    {
+      "tesseract-ocr-parser": {
+        "skipOcr": true
+      }
+    },
+    {
+      "default-parser": {}
+    }
+  ]
+}

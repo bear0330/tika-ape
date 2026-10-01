@@ -5,11 +5,14 @@ build/
 dist/
 tika.com
 tika.com.download
+/.tika-ape-*/
 hs_err_pid*.log
 bindings/python/src/tika_ape/bin/
+bindings/python/src/tika_ape/config/default.json
 bindings/python/tests/fixtures/
 bindings/python/tmp*
 bindings/node/src/bin/
+bindings/node/src/config/default.json
 bindings/node/tests/fixtures/
 bindings/node/*.tgz
 examples/evidence_copilot/assets/
