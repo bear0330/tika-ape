@@ -1,7 +1,7 @@
 {
   "apebindGenerated": true,
   "name": "tika-ape",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Apache Tika 4 for Node.js, bundled with a portable Java runtime - no system Java required.",
   "type": "module",
   "main": "./src/index.js",
