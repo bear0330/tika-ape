@@ -8,6 +8,9 @@ Java.
 generated with [APEBind](https://github.com/nuwainfo/apebind). No system Java,
 Tika server, or JVM configuration is required.
 
+<img width="724" height="543" alt="圖片" src="https://github.com/user-attachments/assets/02a25358-3c21-46cb-bc68-a75c187be8ae" />
+
+
 ## Use `tika.com`
 
 You can download the latest [`tika.com` release](https://github.com/bear0330/tika-ape/releases)
